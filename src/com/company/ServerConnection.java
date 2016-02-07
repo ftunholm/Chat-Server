@@ -11,7 +11,9 @@ import java.util.concurrent.Executors;
  * Created by LanfeaR on 2016-02-07.
  */
 public class ServerConnection {
-    private final static int port = 1337;
+    private final static int PORT = 1337;
+    private final static int NUMBER_OF_CLIENTS_ALLOWED = 20;
+
     public static HashMap<String, ConnectedClient> clients;
 
     public ServerConnection() {
@@ -20,10 +22,10 @@ public class ServerConnection {
     }
 
     private void startServer() {
-        final ExecutorService clientProcessingPool = Executors.newFixedThreadPool(20);
+        final ExecutorService clientProcessingPool = Executors.newFixedThreadPool(NUMBER_OF_CLIENTS_ALLOWED);
         Runnable serverTask = () -> {
             try {
-                ServerSocket serverSocket = new ServerSocket(port);
+                ServerSocket serverSocket = new ServerSocket(PORT);
                 System.out.println("Waiting for clients to connect...");
                 while (true) {
                     Socket clientSocket = serverSocket.accept();

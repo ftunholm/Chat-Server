@@ -27,6 +27,7 @@ public class InputHelper {
     private void nicknameRequest(String nick) throws IOException {
         if (ServerConnection.addClient(client, nick)) {
             client.setNickname(nick);
+            client.setIsConnected(true); //The client should not be considered connected until he has a nickname
             client.write("NICK OK");
             for (String s : ServerConnection.clients.keySet()) {
                 if (!s.equals(nick)) {

@@ -11,6 +11,7 @@ public class ConnectedClient implements Runnable {
     private BufferedReader in;
     private BufferedWriter out;
     private String nickname;
+    private boolean isConnected;
 
     public ConnectedClient(Socket clientSocket) throws IOException {
         nickname = "";
@@ -29,13 +30,10 @@ public class ConnectedClient implements Runnable {
         String line;
         try {
             InputHelper helper = new InputHelper(this);
-            while (true) {
-                line = in.readLine();
+            while ((line = in.readLine()) != null) {
                 helper.processInput(line);
-                if (in.read() == -1) {
-                    disconnect();
-                }
             }
+            disconnect();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -46,15 +44,24 @@ public class ConnectedClient implements Runnable {
         out.flush();
     }
 
+    private void disconnect() throws IOException {
+        ServerConnection.removeClient(getNickname());
+        clientSocket.close();
+        if (isConnected()) {
+            ServerConnection.broadcastMessage("QUIT " + getNickname());
+        }
+    }
+
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
     public String getNickname() {
         return this.nickname;
     }
-    private void disconnect() throws IOException {
-        ServerConnection.removeClient(getNickname());
-        clientSocket.close();
-        ServerConnection.broadcastMessage("QUIT " + getNickname());
+    public boolean isConnected() {
+        return isConnected;
+    }
+    public void setIsConnected(boolean isConnected) {
+        this.isConnected = isConnected;
     }
 }
